@@ -299,3 +299,45 @@
   }
 )
 
+;; Advanced Risk Management Functions
+(define-public (add-multi-asset-collateral
+  (assets (list 10 principal))
+  (amounts (list 10 uint))
+)
+  (begin
+    (map-set multi-asset-collateral
+      {user: tx-sender}
+      {
+        collateral-assets: assets,
+        total-collateral-value: (fold + amounts u0),
+        collateralization-ratio: u0  ;; Calculate dynamically
+      }
+    )
+    (ok true)
+  )
+)
+
+;; Dynamic Interest Rate Calculation
+(define-private (calculate-dynamic-interest-rate
+  (asset principal)
+  (current-utilization uint)
+)
+  (let (
+    (rate-params (unwrap! 
+      (map-get? dynamic-interest-rates {asset: asset}) 
+      u0))
+    (base-rate (get base-rate rate-params))
+    (optimal-rate (get optimal-utilization-rate rate-params))
+    (slope-1 (get utilization-slope-1 rate-params))
+    (slope-2 (get utilization-slope-2 rate-params))
+  )
+    (if (<= current-utilization optimal-rate)
+      (+ base-rate (/ (* slope-1 current-utilization) optimal-rate))
+      (+ base-rate 
+         slope-1 
+         (/ (* slope-2 (- current-utilization optimal-rate)) 
+            (- u1000 optimal-rate))
+      )
+    )
+  )
+)
