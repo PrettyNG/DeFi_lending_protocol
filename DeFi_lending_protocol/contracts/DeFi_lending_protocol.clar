@@ -174,3 +174,40 @@
   )
 )
 
+;; Emergency Pause Mechanism
+(define-data-var contract-paused bool false)
+
+(define-public (toggle-contract-pause)
+  (begin
+    (asserts! (is-eq tx-sender CONTRACT-OWNER) ERR-UNAUTHORIZED)
+    (var-set contract-paused (not (var-get contract-paused)))
+    (ok true)
+  )
+)
+
+;; Liquidation Mechanism
+(define-public (liquidate-loan 
+  (loan-id uint)
+  (liquidation-amount uint)
+)
+  (let (
+    (loan (unwrap! (map-get? loans {loan-id: loan-id}) ERR-LOAN-NOT-FOUND))
+    (borrower (get borrower loan))
+  )
+    (asserts! (< (get-user-health-factor borrower) u150) ERR-LIQUIDATION-NOT-ALLOWED)
+    
+    ;; Implement liquidation logic
+    ;; Transfer collateral to liquidator at a discount
+    (ok true)
+  )
+)
+
+;; Reward Distribution
+(define-map reward-pool 
+  {user: principal}
+  {
+    pending-rewards: uint,
+    last-updated-block: uint
+  }
+)
+
