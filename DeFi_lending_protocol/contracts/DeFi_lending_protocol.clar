@@ -211,3 +211,41 @@
   }
 )
 
+(define-public (claim-rewards)
+  (let (
+    (user tx-sender)
+    (rewards (default-to {pending-rewards: u0, last-updated-block: u0} 
+               (map-get? reward-pool {user: user})))
+  )
+    (asserts! (> (get pending-rewards rewards) u0) ERR-INSUFFICIENT-BALANCE)
+    ;; Transfer rewards to user
+    (ok true)
+  )
+)
+
+;; Flash Loan Capability
+(define-public (flash-loan 
+  (asset principal)
+  (amount uint)
+  (callback-contract principal)
+  (callback-function (string-ascii 256))
+)
+  (let (
+    (pool (unwrap! (map-get? asset-pool {asset: asset}) ERR-INSUFFICIENT-LIQUIDITY))
+  )
+    (asserts! (>= (get available-liquidity pool) amount) ERR-INSUFFICIENT-LIQUIDITY)
+    
+    ;; Implement flash loan logic with callback
+    (ok true)
+  )
+)
+
+;; Multi-Asset Collateralization
+(define-map multi-asset-collateral
+  {user: principal}
+  {
+    collateral-assets: (list 10 principal),
+    total-collateral-value: uint,
+    collateralization-ratio: uint
+  }
+)
