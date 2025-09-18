@@ -249,3 +249,53 @@
     collateralization-ratio: uint
   }
 )
+
+;; Dynamic Interest Rate Model
+(define-map dynamic-interest-rates
+  {asset: principal}
+  {
+    base-rate: uint,
+    utilization-slope-1: uint,
+    utilization-slope-2: uint,
+    optimal-utilization-rate: uint
+  }
+)
+
+;; Credit Scoring Mechanism
+(define-map user-credit-score
+  {user: principal}
+  {
+    score: uint,
+    total-loans: uint,
+    repayment-history: (list 10 bool),
+    last-updated: uint
+  }
+)
+
+;; Cross-Chain Compatibility Layer
+(define-map cross-chain-bridges
+  {source-chain: (string-ascii 50)}
+  {
+    bridge-contract: principal,
+    is-active: bool,
+    fee-percentage: uint
+  }
+)
+
+;; Advanced Risk Parameters
+(define-data-var max-loan-to-value uint u750)  ;; 75% LTV
+(define-data-var liquidation-penalty uint u110)  ;; 10% penalty
+
+;; Governance Proposal System
+(define-map governance-proposals
+  {proposal-id: uint}
+  {
+    proposer: principal,
+    description: (string-ascii 200),
+    proposed-changes: (string-ascii 100),
+    votes-for: uint,
+    votes-against: uint,
+    status: (string-ascii 20)
+  }
+)
+
